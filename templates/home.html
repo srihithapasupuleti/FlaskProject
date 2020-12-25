@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <h1 >Login to Twitter and Facebook</h1>
+    <title>Authenticatation</title>
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: 1433321530211999,
+                cookie: true,
+                xfbml: true,
+                version: 'v7.0'
+            });
+
+
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        function statusChangeCallback(response) {
+            if (response.status == 'connected') {
+              
+              
+
+              //  document.getElementById('status').innerHTML = 'Logged in and authenticated'
+                testAPI();
+            } else {
+                console.log('Not authenticated')
+
+
+            }
+
+
+        }
+
+        function checkLoginState() {
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        }
+
+
+        function testAPI() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+            console.log('Welcome!  Fetching your information.... ');
+              FB.api('/me', function (response) {
+                console.log('Successful login for: ' + response.name);
+                FB.api("/me?fields=posts.limit(50)", function (response) {
+                    console.log(response)
+                    console.log(response.posts.data[0].message)
+                    document.getElementById("status").innerHTML = response.posts.data[0].message;
+                    document.getElementById("status1").innerHTML = response.posts.data[1].message;
+                    document.getElementById("status2").innerHTML = response.posts.data[2].message;
+                    document.getElementById("status3").innerHTML = response.posts.data[3].message;
+                    document.getElementById("status4").innerHTML = response.posts.data[4].message;
+                    document.getElementById("status5").innerHTML = response.posts.data[5].message;
+                  //  for (var i = 0; i < response.posts.data.length; i++) {
+                   //     console.log(response.posts.data[i].message)
+
+                   //     document.getElementById("status").innerHTML = response.posts.data[0].message; 
+
+                       
+ 	              
+                   // }
+
+
+
+                });
+            });
+        }
+
+        function displayTweets(data) {
+            console.log(data)
+
+        }
+
+
+
+    </script>
+
+</head>
+<body>
+    <br /><br />
+    <button onclick="signin()">
+        Sign in with twitter
+    </button>
+    <div id="profile-pic">
+
+    </div>
+    <div id="user-name">
+
+    </div>
+    <br />
+    <br />
+    <fb:login-button scope="public_profile,email,user_posts"
+                     onlogin="checkLoginState();">
+    </fb:login-button><br />
+    <br />
+    <div id="status">
+
+    </div><br />
+    <div id="status1">
+
+    </div><br />
+    <div id="status2">
+
+    </div><br />
+    <div id="status3">
+
+    </div><br />
+    <div id="status4">
+
+    </div><br />
+    <div id="status5">
+
+    </div>
+    <br />
+    <br />
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="p-5">
+                    <form class="form-inline" method="GET" action="{{ url_for('get_tweets1') }}">
+                        <input class="form-control" type="text" name="q">
+                        <button class="btn btn-primary" type="submit">search</button>
+                    </form>
+                </div>
+                {% for tweet in tweets %}
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <div class="card-text">
+                            {{ tweet.text }}
+                            {{ tweet }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.15.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.3/firebase-auth.js"></script>
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.15.3/firebase-analytics.js"></script>
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyAwueXl10ECrkdaf5k0KY9uc5ECzsdFVSU",
+        authDomain: "assignment-37adf.firebaseapp.com",
+        databaseURL: "https://assignment-37adf.firebaseio.com",
+        projectId: "assignment-37adf",
+        storageBucket: "assignment-37adf.appspot.com",
+        messagingSenderId: "402877216297",
+        appId: "1:402877216297:web:038258af587e93cefe8e38",
+        measurementId: "G-172PLT36ZF"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+</script>
+<script>
+    function signin() {
+        var provider = new firebase.auth.TwitterAuthProvider();
+        firebase.auth().useDeviceLanguage();
+        firebase.auth().signInWithPopup(provider).then(function (result) {
+            // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+            // You can use these server side with your app's credentials to access the Twitter API.
+            var token = result.credential.accessToken;
+            var secret = result.credential.secret;
+            // The signed-in user info.
+            var user = result.user;
+            console.log(user);
+           
+
+
+            // ...
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+        });
+
+
+    }
+    
+
+
+
+</script>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
